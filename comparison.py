@@ -8,39 +8,47 @@ can capture complex non-linear relationships that a simple from-scratch logistic
 might miss. It often performs very well on structured datasets like the Wisconsin Breast 
 Cancer dataset."""
 
-from binary_classification import load_data, MyLogisticRegression
+import torch
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from binary_classification import load_data, train, predict, accuracy
 
-# Load dataset
-x, y = load_data()
-X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+# Load normalized data from binary_classification.py
+X_train, X_test, y_train, y_test, feature_names = load_data()
 
-# -------------------------------
-# From-scratch model (assume already implemented)
-# -------------------------------
-scratch_model = MyLogisticRegression(lr=0.01, epochs=1000)
-scratch_model.fit(X_train, y_train)
-y_pred_scratch = scratch_model.predict(X_test)
-accuracy_scratch = accuracy_score(y_test, y_pred_scratch)
-print(f"From-scratch model test accuracy: {accuracy_scratch:.4f}")
+# ==============================
+# Part 1: From-Scratch Model
+# ==============================
+# Train using your implemented model
+w, b, losses = train(X_train, y_train, alpha=0.01, n_epochs=100, verbose=False)
+y_pred_scratch = predict(X_test, w, b)
+acc_scratch = accuracy(y_test, y_pred_scratch)
+print(f"From-scratch model test accuracy: {acc_scratch:.4f}")
 
-# -------------------------------
-# Scikit-learn Random Forest model
-# -------------------------------
+# ==============================
+# Part 2: Random Forest Model
+# ==============================
+# Convert torch tensors to numpy for sklearn
+X_train_np = X_train.numpy()
+X_test_np = X_test.numpy()
+y_train_np = y_train.numpy()
+y_test_np = y_test.numpy()
+
+# Initialize and train Random Forest
 rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
-rf_model.fit(X_train, y_train)
-y_pred_rf = rf_model.predict(X_test)
-accuracy_rf = accuracy_score(y_test, y_pred_rf)
-print(f"Random Forest test accuracy: {accuracy_rf:.4f}")
+rf_model.fit(X_train_np, y_train_np)
 
-# -------------------------------
-# Comparison comment
-# -------------------------------
+# Predict and compute accuracy
+y_pred_rf = rf_model.predict(X_test_np)
+acc_rf = (y_pred_rf == y_test_np).mean()
+print(f"Random Forest test accuracy: {acc_rf:.4f}")
+
+# ==============================
+# Comparison Comment
+# ==============================
 """
-In this comparison, the Random Forest classifier achieved higher test accuracy than the 
-from-scratch logistic regression model. This is likely because Random Forest can capture 
-non-linear interactions between features, whereas logistic regression assumes a linear decision 
-boundary. Ensemble methods like Random Forest also reduce variance and overfitting, which is 
-especially helpful on smaller datasets like this one."""
+In this comparison, the Random Forest model achieved slightly lower accuracy than 
+the from-scratch linear model. This is, perhaps, expected because the Wisconsin 
+Breast Cancer dataset is relatively simple and may be well-suited to a linear decision
+boundary. However, the Random Forest's performance is still quite good, and it has
+the advantage of being able to capture non-linear relationships and interactions between
+features, whereas our linear model is limited to a single linear decision boundary."""
