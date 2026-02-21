@@ -28,9 +28,13 @@ def sigmoid(z):
     Returns:
         scalar output in (0, 1)
     """
+    #return 1 / (1 + torch.exp(-z))
+    #return torch.sigmoid(z)
     y = torch.sigmoid(z)
-    eps = 1e-7
-    return torch.clamp(y, min=eps, max=1-eps)
+    eps = 1e-7  # small constant to prevent exact 0 or 1
+    y = torch.clamp(y, min=eps, max=1-eps)
+    return y
+    
 # raise NotImplementedError("TODO: implement sigmoid")
 
 
@@ -52,8 +56,7 @@ def forward(x, w, b):
     z = torch.dot(w, x) + b  # TODO: compute z = w · x + b
     # Clip z to avoid overflow
     z = torch.clamp(z, -50, 50)
-    
-    y_hat = torch.sigmoid(z)  # TODO: apply sigmoid to z
+    y_hat = sigmoid(z)  # TODO: apply sigmoid to z
     return y_hat
     # raise NotImplementedError("TODO: implement forward pass")
 
@@ -97,7 +100,7 @@ def compute_gradients(x, y, y_hat):
     """
     error = y_hat - y  # TODO: compute error = ŷ - y
     sigmoid_deriv = y_hat * (1 - y_hat)  # TODO: compute sigmoid derivative = ŷ(1 - ŷ)
-    delta = error * sigmoid_deriv  # TODO: compute δ = error × sigmoid_deriv
+    delta = error * sigmoid_deriv # TODO: compute δ = error × sigmoid_deriv
 
     dw = delta * x  # TODO: compute ∂L/∂w = δ × x
     db = delta  # TODO: compute ∂L/∂b = δ
