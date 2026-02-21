@@ -28,7 +28,7 @@ def sigmoid(z):
     Returns:
         scalar output in (0, 1)
     """
-    return 1 / (1 + torch.exp(-z))
+    return torch.sigmoid(z)
 # raise NotImplementedError("TODO: implement sigmoid")
 
 
