@@ -96,6 +96,7 @@ def compute_gradients(x, y, y_hat):
 
     dw = delta * x  # TODO: compute ∂L/∂w = δ × x
     db = delta  # TODO: compute ∂L/∂b = δ
+    return dw, db
 
     # raise NotImplementedError("TODO: implement compute_gradients")
 
