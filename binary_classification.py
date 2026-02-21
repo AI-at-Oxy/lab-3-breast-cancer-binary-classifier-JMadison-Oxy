@@ -28,7 +28,9 @@ def sigmoid(z):
     Returns:
         scalar output in (0, 1)
     """
-    return torch.sigmoid(z)
+    y = torch.sigmoid(z)
+    eps = 1e-7
+    return torch.clamp(y, min=eps, max=1-eps)
 # raise NotImplementedError("TODO: implement sigmoid")
 
 
@@ -48,6 +50,9 @@ def forward(x, w, b):
         scalar prediction in (0, 1)
     """
     z = torch.dot(w, x) + b  # TODO: compute z = w · x + b
+    # Clip z to avoid overflow
+    z = torch.clamp(z, -50, 50)
+    
     y_hat = torch.sigmoid(z)  # TODO: apply sigmoid to z
     return y_hat
     # raise NotImplementedError("TODO: implement forward pass")
